@@ -9,7 +9,7 @@ dotenv.config();
 
 const app = express();
 
-const mongoUrl = "process.env.MONGO_DB_URI"
+const mongoUrl = "mongodb+srv://admin:123@cluster0.ltmfv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
 mongoose.connect(mongoUrl,{})
 
