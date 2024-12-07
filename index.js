@@ -34,6 +34,7 @@ app.use(
 
         if(!error){
           req.user = decoded;
+          console.log(decoded);
       }
 
       })
