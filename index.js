@@ -2,15 +2,17 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
 import userRouter from './routes/userRouter.js';
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 import productRouter from './routes/productRouter.js';
 
-dotenv.config();
+
+dotenv.config()
+
 
 const app = express();
 
-const mongoUrl = "mongodb+srv://admin:123@cluster0.ltmfv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+const mongoUrl = process.env.MONGO_DB_URI;
 
 mongoose.connect(mongoUrl,{})
 
@@ -27,32 +29,30 @@ app.use(
 
   (req,res,next)=>{
 
-   const token = req.header("Authorization")?.replace("Bearer ","");
-   console.log(token);
 
-    if(token == null){
+
+    const token = req.header("Authorization")?.replace("Bearer ","")
+    console.log(token)
+
+    if(token != null){
       jwt.verify(token,process.env.SECRET_KEY,(error,decoded)=>{
 
         if(!error){
-          req.user = decoded;
-          console.log(decoded);
-      }
+          req.user = decoded   
+          console.log(decoded)     
+        }
 
       })
     }
 
-  next();
-
+    next()
 
   }
 
-
 )
-
-
-
 app.use("/api/users",userRouter)
 app.use("/api/products",productRouter)
+
 
 
 app.listen(
@@ -61,4 +61,5 @@ app.listen(
     console.log('Server is running on port 5000');
   }
 )
+
 

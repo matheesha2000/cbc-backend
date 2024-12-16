@@ -1,67 +1,64 @@
-import User from '../models/user.js';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
+import User from "../models/user.js";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
 
-dotenv.config();  
+dotenv.config()
 
 
 export function createUser(req,res){
 
-  const newUserData = req.body;
+  const newUserData = req.body
 
   if(newUserData.type == "admin"){
 
     if(req.user==null){
       res.json({
-        message : "Please login as administrator to create admin accounts"
+        message: "Please login as administrator to create admin accounts"
       })
       return
-    
     }
 
     if(req.user.type != "admin"){
       res.json({
-        message : "Please login as administrator to create admin accounts"
+        message: "Please login as administrator to create admin accounts"
       })
       return
     }
+
   }
 
+  newUserData.password = bcrypt.hashSync(newUserData.password, 10)  
 
-  newUserData.password = bcrypt.hashSync(newUserData.password,10);
+  const user = new User(newUserData)
 
- const user = new User(newUserData);
-
-  user.save().then(
-    ()=>{
-      res.json({
-        message : "User created"
-      })
-    }
-      ).catch(
-        ()=>{
-          res.json({
-            message : "User not created"
-          })
-        }
-      )
-
-} 
+  user.save().then(()=>{
+    res.json({
+      message: "User created"
+    })
+  }).catch((error)=>{
+    res.json({      
+      message: "User not created"
+    })
+  })
+  
+}
 
 export function loginUser(req,res){
 
   User.find({email : req.body.email}).then(
     (users)=>{
       if(users.length == 0){
+
         res.json({
-          message : "User not found"
+          message: "User not found"
         })
+
       }else{
 
-        const user = users[0];
+        const user = users[0]
 
-        const isPasswordCorrect = bcrypt.compareSync(req.body.password,user.password);
+        const isPasswordCorrect = bcrypt.compareSync(req.body.password,user.password)
 
         if(isPasswordCorrect){
 
@@ -72,50 +69,46 @@ export function loginUser(req,res){
             isBlocked : user.isBlocked,
             type : user.type,
             profilePicture : user.profilePicture
-          }
-            , process.env.SECRET_KEY);
-          console.log(token);
-
+          } , process.env.SECRET_KEY)
+          
           res.json({
-            message : "User logged in",
-            token : token
+            message: "User logged in",
+            token: token
           })
-         
+          
         }else{
           res.json({
-            message : "User not logged in (wrong password)"
+            message: "User not logged in (wrong password)"
           })
         }
       }
     }
-  ) 
-}  
+  )
+}
 
 export function isAdmin(req){
   if(req.user==null){
-    return false;
-  }
-  if(req.user.type != "admin"){
-    return false;
+    return false
   }
 
-  return true;
+  if(req.user.type != "admin"){
+    return false
+  }
+
+  return true
 }
 
 export function isCustomer(req){
   if(req.user==null){
-    return false;
-  }
-  if(req.user.type != "customer"){
-    return false;
+    return false
   }
 
-  return true;
+  if(req.user.type != "customer"){
+    return false
+  }
+
+  return true
 }
 
-//matheesha27@example.com  securepassword123 
-//matheesha28@example.com  securepassword123
-
-
-
-
+// matheesha27@example.com securepassword123 - admin
+// matheesha28@example.com securepassword123 -customer
