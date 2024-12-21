@@ -5,7 +5,6 @@ import dotenv from "dotenv";
 
 dotenv.config()
 
-
 export function createUser(req,res){
 
   const newUserData = req.body
@@ -110,5 +109,5 @@ export function isCustomer(req){
   return true
 }
 
-// matheesha27@example.com securepassword123 - admin
-// matheesha28@example.com securepassword123 -customer
+// malith27@example.com securepassword123 - admin
+// malith28@example.com securepassword123 -customer
