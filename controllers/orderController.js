@@ -10,7 +10,8 @@ export async function createOrder(req,res){
   }
     try{
         const latestOrder = await Order.find({}).sort
-        ({date : -1}).limit(1)
+        ({date : -1}).limit(1);
+        console.log(latestOrder);
 
         let orderId
 
@@ -52,8 +53,8 @@ export async function createOrder(req,res){
 
             newProductArray[i] = {
                 name : product.productName,
-                price : product.price,
-                quantity : newOrderData.orderedItems[i].quantity,
+                price : product.lastPrice,
+                quantity : newOrderData.orderedItems[i].qty,
                 image : product.images[0]
               }
 
@@ -73,7 +74,8 @@ export async function createOrder(req,res){
         await order.save()
 
         res.json({
-            message : "Order created"
+            message : "Order created",
+            order : savedOrder
         })
 
 
@@ -95,4 +97,72 @@ export async function getOrders(req,res){
             message : error.message
         })
     }
+}
+
+
+
+export async function getQuote(req,res){
+
+        try{
+    
+            const newOrderData = req.body
+    
+            const newProductArray = []
+
+            let total = 0;
+            let labledTotal = 0;
+            console.log(req.body)
+
+    
+            for (let i = 0; i < newOrderData.orderedItems.length; i++) {
+                
+                const product = await Product.findOne({
+                    productId : newOrderData.orderedItems[i].productId
+                })
+    
+                if(product == null){
+                    res.json({
+                        message: "Product with id " + newOrderData.
+                        orderedItems[i].productId + " not found"
+                    })
+                    return
+                }
+
+                labeledtotal = product.price * newOrderData.orderedItems[i].qty;
+                total = product.lastPrice * newOrderData.orderedItems[i].qty;
+    
+                newProductArray[i] = {
+                    name : product.productName,
+                    price : product.lastPrice,
+                    labeledPrice : product.price,
+                    quantity : newOrderData.orderedItems[i].qty,
+                    image : product.images[0]
+                  }
+
+
+            }
+    
+                console.log(newProductArray)
+                newOrderData.orderedItems = newProductArray
+                newOrderData.total = total
+
+            res.json({
+                orderedItems: newProductArray,
+                total: total,
+                labledTotal: labledTotal
+        });
+    
+    
+    
+    
+        }catch(error){
+            res.status(500).json({
+                message : error.message
+            })
+    
+        }
+    
+    
+
+
 }
