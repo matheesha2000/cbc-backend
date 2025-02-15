@@ -167,9 +167,7 @@ export async function getQuote(req,res){
                 labledTotal: labledTotal
         });
     
-    
-    
-    
+       
         }catch(error){
             res.status(500).json({
                 message : error.message
@@ -177,7 +175,51 @@ export async function getQuote(req,res){
     
         }
     
+    }
+
+        export async function updateOrder(req, res) {
+          if (!isAdmin(req)) {
+            res.json({
+              message: "Please login as admin to update orders",
+            });
+          }
+          
+          try {
+            const orderId = req.params.orderId;
+        
+            const order = await Order.findOne({
+              orderId: orderId,
+            });
+        
+            if (order == null) {
+              res.status(404).json({
+                message: "Order not found",
+              })
+              return;
+            }
+        
+            const notes = req.body.notes;
+            const status = req.body.status;
+        
+            const updateOrder = await Order.findOneAndUpdate(
+              { orderId: orderId },
+              { notes: notes, status: status }
+            );
+        
+            res.json({
+              message: "Order updated",
+              updateOrder: updateOrder
+            });
+        
+          }catch(error){
+        
+            
+            res.status(500).json({
+              message: error.message,
+            });
+          }
+}
+    
     
 
 
-}
