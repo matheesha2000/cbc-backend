@@ -6,15 +6,15 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import productRouter from './routes/productRouter.js';
 import orderRouter from './routes/orderRouter.js';
-import cors from 'cors';
-
-
+import reviewRouter from './routes/reviewRouter.js';
+import cors from "cors";
+import e from 'express';
 dotenv.config()
 
 
 const app = express();
 
-const mongoUrl = process.env.MONGO_DB_URI;
+const mongoUrl = process.env.MONGO_DB_URI
 
 app.use(cors())
 
@@ -39,7 +39,7 @@ app.use(
     console.log(token)
 
     if(token != null){
-      jwt.verify(token,process.env.SECRET_KEY,(error,decoded)=>{
+      jwt.verify(token,process.env.SECRET , (error,decoded)=>{
 
         if(!error){
           req.user = decoded   
@@ -57,7 +57,7 @@ app.use(
 app.use("/api/users",userRouter)
 app.use("/api/products",productRouter)
 app.use("/api/orders",orderRouter)
-
+app.use("/api/reviews",reviewRouter)
 
 
 app.listen(
@@ -67,4 +67,4 @@ app.listen(
   }
 )
 
-
+export default app
