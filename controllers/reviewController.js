@@ -25,3 +25,20 @@ export async function createReview(req, res) {
       res.status(500).json({ message: error.message });
     }
   }
+
+  // Get all reviews for a product
+export async function getReviews(req, res) {
+    try {
+      const { productId } = req.query;
+      
+      if (!productId) {
+        return res.status(400).json({ message: "Product ID is required" });
+      }
+  
+      const reviews = await Review.find({ productId });
+  
+      res.status(200).json(reviews);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
