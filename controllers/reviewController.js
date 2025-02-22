@@ -1,5 +1,5 @@
 import Review from "../models/review.js";
-import { isUser } from "./userController.js";
+import { isUser, isAdmin } from "./userController.js";
 
 
 // Create a new review
@@ -65,6 +65,27 @@ export async function updateReview(req, res) {
       await review.save();
   
       res.status(200).json({ message: "Review updated successfully", review });
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  // Delete a review
+export async function deleteReview(req, res) {
+    if (!isUser(req) && !isAdmin(req)) {
+      return res.json({ message: "Unauthorized to delete reviews" });
+    }
+  
+    try {
+      const { reviewId } = req.params;
+  
+      const review = await Review.findOneAndDelete({ _id: reviewId });
+  
+      if (!review) {
+        return res.status(404).json({ message: "Review not found" });
+      }
+  
+      res.status(200).json({ message: "Review deleted successfully" });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }
